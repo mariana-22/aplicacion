@@ -1,0 +1,35 @@
+name: DevSecOps
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: npm audit
+        run: npm audit
+
+      - name: Construir imagen
+        run: docker build -t api-recuperacion .
+
+      - name: Escanear imagen con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: api-recuperacion
+          severity: HIGH,CRITICAL
+          exit-code: 1

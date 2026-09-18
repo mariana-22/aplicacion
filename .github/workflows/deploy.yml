@@ -26,15 +26,18 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Construir imagen
-        run: docker build -t api-fortaleza-nube:latest .
+        run: docker build --tag api-fortaleza-nube:latest .
 
       - name: Escanear imagen con Trivy
-        uses: aquasecurity/trivy-action@v0.24.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
-          image-ref: api-fortaleza-nube:latest
-          severity: HIGH,CRITICAL
-          exit-code: 1
+          scan-type: image
+          image-ref: "api-fortaleza-nube:latest"
+          vuln-type: "os,library"
+          severity: "HIGH,CRITICAL"
           ignore-unfixed: true
+          exit-code: "1"
+          format: table
 
       - name: Iniciar sesión en Docker Hub
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -46,8 +49,8 @@ jobs:
       - name: Publicar imagen
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          docker tag api-fortaleza-nube ${{ secrets.DOCKERHUB_USERNAME }}/api-fortaleza-nube
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/api-fortaleza-nube
+          docker tag api-fortaleza-nube:latest ${{ secrets.DOCKERHUB_USERNAME }}/api-fortaleza-nube:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/api-fortaleza-nube:latest
 
   deploy:
     needs: security

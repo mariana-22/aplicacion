@@ -46,8 +46,8 @@ jobs:
       - name: Publicar imagen
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          docker tag api-fortaleza-nube:latest ${{ secrets.DOCKERHUB_USERNAME }}/api-fortaleza-nube:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/api-fortaleza-nube:latest
+          docker tag api-fortaleza-nube ${{ secrets.DOCKERHUB_USERNAME }}/api-fortaleza-nube
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/api-fortaleza-nube
 
   deploy:
     needs: security
